@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Book Appointment | MediCare+{% endblock %}
+{% block nav_book_appointment %}active{% endblock %}
+
+{% block content %}
+
+<div class="page-header-bar">
+  <div class="container">
+    <p class="section-eyebrow mb-1">Patient Portal</p>
+    <h2 class="section-title mb-0">Book an Appointment</h2>
+  </div>
+</div>
+
+<div class="container mb-5">
+  <div class="row g-4">
+
+    <!-- ==========================================================
+         LEFT INFO PANEL
+         ========================================================== -->
+    <div class="col-lg-4">
+      <div class="form-side-panel">
+        <div>
+          <h4 class="text-white mb-3">How booking works</h4>
+          <div class="panel-feature">
+            <i class="bi bi-1-circle"></i>
+            <div>
+              <p class="fw-semibold mb-0">Choose your doctor</p>
+              <p class="small mb-0" style="color:#CDE7E4;">Pick a specialist based on your need.</p>
+            </div>
+          </div>
+          <div class="panel-feature">
+            <i class="bi bi-2-circle"></i>
+            <div>
+              <p class="fw-semibold mb-0">Pick date &amp; time</p>
+              <p class="small mb-0" style="color:#CDE7E4;">Select from the doctor's available slots.</p>
+            </div>
+          </div>
+          <div class="panel-feature">
+            <i class="bi bi-3-circle"></i>
+            <div>
+              <p class="fw-semibold mb-0">Wait for approval</p>
+              <p class="small mb-0" style="color:#CDE7E4;">The doctor confirms your request — you'll see the status update instantly.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- IMAGE PLACEHOLDER: small illustration / calendar graphic -->
+        <!-- Replace src with: {% static 'images/appointment-illustration.svg' %} -->
+        <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=600&auto=format&fit=crop"
+             alt="Calendar and stethoscope illustration" class="rounded-3 mt-4" style="opacity:0.9;">
+      </div>
+    </div>
+
+    <!-- ==========================================================
+         APPOINTMENT FORM
+         ========================================================== -->
+    <div class="col-lg-8">
+      <div class="form-card form-medicare">
+        <h5 class="mb-1">Appointment Details</h5>
+        <p class="text-secondary small mb-4">Fields marked with * are required.</p>
+
+        <form method="post" action="{% url 'book_appointment' %}" novalidate>
+          {% csrf_token %}
+
+          <div class="row g-4">
+            <!-- Doctor selection -->
+            <div class="col-md-12">
+              <label for="doctorSelect">Select Doctor *</label>
+              <select class="form-select" id="doctorSelect" name="doctor" required>
+                <option value="" selected disabled>Choose a specialist...</option>
+                {% for doctor in doctors %}
+
+                <option value="{{ doctor.id }}">
+                  Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }} ({{ doctor.specialization }})
+                </option>
+            
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Date -->
+            <div class="col-md-6">
+              <label for="appointmentDate">Preferred Date *</label>
+              <div class="input-icon-group">
+                <i class="bi bi-calendar3"></i>
+                <input type="date" class="form-control" id="appointmentDate" name="date" required>
+              </div>
+            </div>
+
+            <!-- Time -->
+            <div class="col-md-6">
+              <label for="appointmentTime">Preferred Time *</label>
+              <div class="input-icon-group">
+                <i class="bi bi-clock"></i>
+                <input type="time" class="form-control" id="appointmentTime" name="time" required>
+              </div>
+            </div>
+
+            <!-- Reason -->
+            <div class="col-md-12">
+              <label for="visitReason">Reason for Visit</label>
+              <textarea class="form-control" id="visitReason" name="reason" rows="4"
+                        placeholder="Briefly describe your symptoms or reason for the visit (optional)"></textarea>
+            </div>
+
+            <!-- Contact number -->
+            <div class="col-md-6">
+              <label for="contactNumber">Contact Number *</label>
+              <div class="input-icon-group">
+                <i class="bi bi-telephone"></i>
+                <input type="tel" class="form-control" id="contactNumber" name="contact_number"
+                       placeholder="+91 90000 00000" required>
+              </div>
+            </div>
+
+            <!-- Appointment type -->
+            <div class="col-md-6">
+              <label for="visitType">Visit Type *</label>
+              <select class="form-select" id="visitType" name="visit_type" required>
+                <option value="in_person" selected>In-person Visit</option>
+                <option value="follow_up">Follow-up Visit</option>
+                <option value="consultation">New Consultation</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap gap-3 mt-4 pt-2 border-top">
+            <button type="submit" class="btn btn-primary btn-lg">
+              <i class="bi bi-calendar-check me-2"></i>Request Appointment
+            </button>
+            <a href="{% url 'patient_home' %}" class="btn btn-outline-primary btn-lg">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Prevent selecting a past date in the date picker
+  document.addEventListener('DOMContentLoaded', function () {
+    const dateInput = document.getElementById('appointmentDate');
+    if (dateInput) {
+      const today = new Date().toISOString().split('T')[0];
+      dateInput.setAttribute('min', today);
+    }
+  });
+</script>
+{% endblock %}

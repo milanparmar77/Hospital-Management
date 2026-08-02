@@ -1,0 +1,320 @@
+/* ==========================================================================
+   MediCare+ — Auth pages (login/register)
+   static/css/auth.css
+   Load AFTER Bootstrap 5 CSS.
+   ========================================================================== */
+
+:root {
+  --auth-primary: #0d6efd;
+  --auth-primary-dark: #084298;
+  --auth-secondary: #20c997;
+  --auth-bg-start: #e7f1ff;
+  --auth-bg-end: #e6fbf3;
+  --auth-ink: #1c2733;
+  --auth-slate: #5c6b7a;
+  --auth-border: #e3e9f0;
+  --auth-danger: #dc3545;
+  --auth-danger-light: #fdecee;
+  --radius-lg: 22px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+}
+
+body.auth-body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--auth-bg-start) 0%, var(--auth-bg-end) 100%);
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: var(--auth-ink);
+  padding: 2rem 1rem;
+}
+
+.auth-wrapper {
+  width: 100%;
+  max-width: 460px;
+}
+
+.auth-wrapper.auth-wrapper-wide {
+  max-width: 760px;
+}
+
+.auth-brand {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.auth-brand .brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(160deg, var(--auth-primary-dark), var(--auth-primary));
+  color: #fff;
+  font-size: 1.6rem;
+  box-shadow: 0 10px 24px rgba(13, 110, 253, 0.25);
+  margin-bottom: 0.75rem;
+}
+
+.auth-brand h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--auth-primary-dark);
+}
+
+.auth-brand p {
+  color: var(--auth-slate);
+  font-size: 0.92rem;
+  margin: 0.25rem 0 0;
+}
+
+.auth-card {
+  background: #ffffff;
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 18px 45px rgba(13, 110, 253, 0.14);
+  padding: 2.25rem;
+}
+
+@media (max-width: 575.98px) {
+  .auth-card { padding: 1.5rem; }
+}
+
+.auth-card h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.auth-card .auth-subtitle {
+  color: var(--auth-slate);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Form fields */
+.auth-form label {
+  font-weight: 600;
+  font-size: 0.86rem;
+  color: var(--auth-ink);
+  margin-bottom: 0.4rem;
+}
+
+.auth-form .input-icon-group {
+  position: relative;
+}
+
+.auth-form .input-icon-group > i {
+  position: absolute;
+  left: 0.95rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--auth-slate);
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.auth-form .form-control,
+.auth-form .form-select {
+  border: 1.5px solid var(--auth-border);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.9rem;
+  font-size: 0.95rem;
+  background-color: #fbfdff;
+}
+
+.auth-form .input-icon-group .form-control {
+  padding-left: 2.6rem;
+}
+
+.auth-form .input-icon-group .form-control.has-toggle {
+  padding-right: 2.6rem;
+}
+
+.auth-form .form-control:focus,
+.auth-form .form-select:focus {
+  border-color: var(--auth-primary);
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
+  background-color: #fff;
+}
+
+/* Password show/hide toggle button */
+.auth-form .password-toggle-btn {
+  position: absolute;
+  right: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--auth-slate);
+  font-size: 1rem;
+  padding: 0.2rem 0.35rem;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.auth-form .password-toggle-btn:hover { color: var(--auth-primary); }
+.auth-form .password-toggle-btn:focus-visible { outline: 2px solid var(--auth-primary); border-radius: 4px; }
+
+/* Invalid state styling (paired with Django form error context) */
+.auth-form .form-control.is-invalid,
+.auth-form .form-select.is-invalid {
+  border-color: var(--auth-danger);
+}
+
+.auth-form .invalid-feedback {
+  font-size: 0.8rem;
+}
+
+/* Top-level error banner (e.g. "Invalid username or password") */
+.auth-alert-error {
+  background-color: var(--auth-danger-light);
+  border: 1px solid #f6c6cc;
+  color: #8a1f2b;
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.auth-alert-error i { margin-top: 0.15rem; flex-shrink: 0; }
+
+/* Role selector (Register page) */
+.role-select-group {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.role-option {
+  flex: 1;
+  position: relative;
+}
+
+.role-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+
+.role-option label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1.5px solid var(--auth-border);
+  border-radius: var(--radius-md);
+  padding: 1rem 0.5rem;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--auth-slate);
+  background-color: #fbfdff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  margin-bottom: 0;
+}
+
+.role-option label i {
+  font-size: 1.5rem;
+  color: var(--auth-slate);
+}
+
+.role-option input[type="radio"]:checked + label {
+  border-color: var(--auth-primary);
+  background-color: var(--auth-primary);
+  color: #fff;
+}
+
+.role-option input[type="radio"]:checked + label i { color: #fff; }
+
+.role-option input[type="radio"]:focus-visible + label {
+  outline: 2px solid var(--auth-primary);
+  outline-offset: 2px;
+}
+
+/* Note: this stylesheet also defines .role-select-group / .role-option,
+   reused on the login page for the optional Patient/Doctor selector.
+   There is no Specialization field on this version of the register
+   page (patients only), so no corresponding styling block is needed. */
+
+/* Buttons */
+.btn-auth-primary {
+  background: linear-gradient(135deg, var(--auth-primary) 0%, var(--auth-primary-dark) 100%);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.7rem 1.2rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.98rem;
+  box-shadow: 0 10px 22px rgba(13, 110, 253, 0.22);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.btn-auth-primary:hover {
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(13, 110, 253, 0.28);
+}
+
+.btn-auth-primary:focus-visible { outline: 3px solid rgba(13, 110, 253, 0.35); outline-offset: 2px; }
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--auth-slate);
+  font-size: 0.82rem;
+  margin: 1.25rem 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: var(--auth-border);
+}
+
+.auth-footer-link {
+  text-align: center;
+  font-size: 0.92rem;
+  color: var(--auth-slate);
+  margin-top: 0.5rem;
+}
+
+.auth-footer-link a {
+  color: var(--auth-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-footer-link a:hover { color: var(--auth-primary-dark); text-decoration: underline; }
+
+.auth-back-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--auth-slate);
+  text-decoration: none;
+  margin-bottom: 1rem;
+}
+
+.auth-back-home:hover { color: var(--auth-primary); }
+
+.password-hint {
+  font-size: 0.78rem;
+  color: var(--auth-slate);
+  margin-top: 0.35rem;
+}

@@ -1,0 +1,309 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | MediCare+</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+
+<body class="auth-body">
+
+  <div class="auth-wrapper">
+
+    <a href="{% url 'patient_home' %}" class="auth-back-home">
+      <i class="bi bi-arrow-left"></i> Back to home
+    </a>
+
+    <div class="auth-brand">
+      <div class="brand-mark"><i class="bi bi-heart-pulse-fill"></i></div>
+      <h1>MediCare+</h1>
+      <p>Create your patient account</p>
+    </div>
+
+    <div class="auth-card">
+      <h2>Create an account</h2>
+      <p class="auth-subtitle">
+        Patient registration only.
+        <span class="d-block mt-1">
+          <i class="bi bi-info-circle"></i> Doctor accounts are created by hospital staff through the admin panel.
+        </span>
+      </p>
+
+      <!-- Top-level / non-field errors (e.g. "username already taken") -->
+      {% if form.non_field_errors %}
+      {% for error in form.non_field_errors %}
+      <div class="auth-alert-error" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <div>{{ error }}</div>
+      </div>
+      {% endfor %}
+      {% endif %}
+
+      {% if messages %}
+      {% for message in messages %}
+      <div class="auth-alert-error" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <div>{{ message }}</div>
+      </div>
+      {% endfor %}
+      {% endif %}
+
+      <!-- ==========================================================
+           This form is written with plain <input> fields rather than
+           {{ form.field }} rendering, so it works whether your view
+           passes a Django Form/ModelForm or just plain request.POST
+           handling. Each field below:
+             - keeps its typed value on a failed resubmit via
+               {{ request.POST.field_name }}  (works automatically;
+               remove if you switch to {{ form.field_name }})
+             - shows {{ form.field_name.errors }} underneath IF a
+               `form` object is in context — harmless no-op otherwise.
+           If you ARE using a ModelForm and want full automatic
+           rendering instead, swap each block below for:
+             {{ form.first_name }}{{ form.first_name.errors }}
+           ========================================================== -->
+      <form method="POST" action="{% url 'register' %}" class="auth-form" novalidate>
+        {% csrf_token %}
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="firstName">First Name</label>
+            <div class="input-icon-group">
+              <i class="bi bi-person"></i>
+              <input type="text" class="form-control {% if form.first_name.errors %}is-invalid{% endif %}"
+                id="firstName" name="first_name" placeholder="Aarav" value="{{ request.POST.first_name|default:'' }}"
+                required>
+            </div>
+            {% if form.first_name.errors %}
+            <div class="invalid-feedback d-block">{{ form.first_name.errors|join:", " }}</div>
+            {% endif %}
+          </div>
+
+          <div class="col-md-6">
+            <label for="lastName">Last Name</label>
+            <div class="input-icon-group">
+              <i class="bi bi-person"></i>
+              <input type="text" class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" id="lastName"
+                name="last_name" placeholder="Shah" value="{{ request.POST.last_name|default:'' }}" required>
+            </div>
+            {% if form.last_name.errors %}
+            <div class="invalid-feedback d-block">{{ form.last_name.errors|join:", " }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row g-3 mt-3">
+          <div class="col-md-6">
+            <label for="username">Username</label>
+            <div class="input-icon-group">
+              <i class="bi bi-at"></i>
+              <input type="text" class="form-control {% if form.username.errors %}is-invalid{% endif %}" id="username"
+                name="username" placeholder="aarav_shah" value="{{ request.POST.username|default:'' }}" required>
+            </div>
+            {% if form.username.errors %}
+            <div class="invalid-feedback d-block">{{ form.username.errors|join:", " }}</div>
+            {% endif %}
+          </div>
+
+          <div class="col-md-6">
+            <label for="email">Email</label>
+            <div class="input-icon-group">
+              <i class="bi bi-envelope"></i>
+              <input type="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" id="email"
+                name="email" placeholder="you@example.com" value="{{ request.POST.email|default:'' }}" required>
+            </div>
+            {% if form.email.errors %}
+            <div class="invalid-feedback d-block">{{ form.email.errors|join:", " }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row g-3 mt-3">
+
+          <!-- Age -->
+          <div class="col-md-6">
+            <label for="age">Age</label>
+            <div class="input-icon-group">
+              <i class="bi bi-calendar-event"></i>
+              <input type="number" class="form-control {% if form.age.errors %}is-invalid{% endif %}" id="age"
+                name="age" placeholder="Enter your age" min="1" max="120" value="{{ request.POST.age|default:'' }}"
+                required>
+            </div>
+
+            {% if form.age.errors %}
+            <div class="invalid-feedback d-block">
+              {{ form.age.errors|join:", " }}
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="col-md-6">
+            <label for="gender">Gender</label>
+            <div class="input-icon-group">
+              <i class="bi bi-gender-ambiguous"></i>
+
+              <select class="form-select {% if form.gender.errors %}is-invalid{% endif %}" id="gender" name="gender"
+                required>
+
+                <option value="" disabled {% if not request.POST.gender %}selected{% endif %}>
+                  Select Gender
+                </option>
+
+                <option value="Male" {% if request.POST.gender == "Male" %}selected{% endif %}>
+                  Male
+                </option>
+
+                <option value="Female" {% if request.POST.gender == "Female" %}selected{% endif %}>
+                  Female
+                </option>
+
+                <option value="Other" {% if request.POST.gender == "Other" %}selected{% endif %}>
+                  Other
+                </option>
+
+              </select>
+            </div>
+
+            {% if form.gender.errors %}
+            <div class="invalid-feedback d-block">
+              {{ form.gender.errors|join:", " }}
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Phone -->
+          <div class="col-md-6">
+            <label for="phone">Phone Number</label>
+            <div class="input-icon-group">
+              <i class="bi bi-telephone"></i>
+              <input type="tel" class="form-control {% if form.phone.errors %}is-invalid{% endif %}" id="phone"
+                name="phone" placeholder="+91 90000 00000" value="{{ request.POST.phone|default:'' }}" required>
+            </div>
+
+            {% if form.phone.errors %}
+            <div class="invalid-feedback d-block">
+              {{ form.phone.errors|join:", " }}
+            </div>
+            {% endif %}
+          </div>
+
+        </div>
+
+        <div class="row g-3 mt-3">
+          <div class="col-md-6">
+            <label for="password">Password</label>
+            <div class="input-icon-group">
+              <i class="bi bi-lock"></i>
+              <input type="password" class="form-control has-toggle {% if form.password.errors %}is-invalid{% endif %}"
+                id="password" name="password" placeholder="Create a password" required>
+              <button type="button" class="password-toggle-btn" data-toggle-target="password"
+                aria-label="Show password">
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+            {% if form.password.errors %}
+            <div class="invalid-feedback d-block">{{ form.password.errors|join:", " }}</div>
+            {% else %}
+            <p class="password-hint mb-0">At least 8 characters, including a number.</p>
+            {% endif %}
+          </div>
+
+          <div class="col-md-6">
+            <label for="confirmPassword">Confirm Password</label>
+            <div class="input-icon-group">
+              <i class="bi bi-lock-fill"></i>
+              <input type="password" class="form-control has-toggle" id="confirmPassword" name="confirm_password"
+                placeholder="Re-enter your password" required>
+              <button type="button" class="password-toggle-btn" data-toggle-target="confirmPassword"
+                aria-label="Show password">
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+            <!-- ==========================================================
+                 CLIENT-SIDE MISMATCH WARNING
+                 UX nicety only — always re-validate that the two
+                 passwords match server-side too, since JS can be
+                 disabled or bypassed.
+                 ========================================================== -->
+            <div id="passwordMismatchWarning" class="invalid-feedback" style="display:none;">
+              Passwords do not match.
+            </div>
+          </div>
+        </div>
+
+        <div class="form-check mt-4 mb-4">
+          <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+          <label class="form-check-label small" for="agreeTerms">
+            I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-auth-primary w-100">
+          <i class="bi bi-person-check me-2"></i>Create Account
+        </button>
+      </form>
+
+      <div class="auth-divider">Already registered</div>
+
+      <a href="{% url 'login' %}" class="btn btn-outline-primary w-100">
+        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In Instead
+      </a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+      // Password show/hide toggle
+      document.querySelectorAll('.password-toggle-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          const input = document.getElementById(btn.getAttribute('data-toggle-target'));
+          const icon = btn.querySelector('i');
+          const isHidden = input.type === 'password';
+          input.type = isHidden ? 'text' : 'password';
+          icon.classList.toggle('bi-eye', !isHidden);
+          icon.classList.toggle('bi-eye-slash', isHidden);
+          btn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+        });
+      });
+
+      // Client-side "passwords match" hint
+      const password = document.getElementById('password');
+      const confirmPassword = document.getElementById('confirmPassword');
+      const mismatchWarning = document.getElementById('passwordMismatchWarning');
+
+      function checkPasswordsMatch() {
+
+        // Hide warning until both fields have values
+        if (password.value.trim() === "" || confirmPassword.value.trim() === "") {
+          mismatchWarning.style.display = "none";
+          confirmPassword.classList.remove("is-invalid");
+          return;
+        }
+
+        if (password.value === confirmPassword.value) {
+          mismatchWarning.style.display = "none";
+          confirmPassword.classList.remove("is-invalid");
+        } else {
+          mismatchWarning.style.display = "block";
+          confirmPassword.classList.add("is-invalid");
+        }
+      }
+
+      password.addEventListener('input', checkPasswordsMatch);
+      confirmPassword.addEventListener('input', checkPasswordsMatch);
+    });
+  </script>
+</body>
+
+</html>

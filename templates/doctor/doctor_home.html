@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Doctor Home | MediCare+{% endblock %}
+{% block nav_doctor_home %}active{% endblock %}
+
+{% block content %}
+
+<!-- ==========================================================
+     DOCTOR HERO / WELCOME
+     ========================================================== -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <p class="eyebrow mb-3">Doctor Portal</p>
+        <h1 class="mb-3">
+          Good to see you, <span style="color:#FFD9D3;">Dr. {{ user.first_name|default:"Doctor" }}</span>
+        </h1>
+        <p class="lead mb-4">
+          Review today's schedule, manage appointment requests, and keep your
+          patient queue moving — all from one screen.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="{% url 'doctor_dashboard' %}" class="btn btn-accent btn-lg">
+            <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+          </a>
+          <a href="{% url 'doctor_dashboard' %}#appointments" class="btn btn-outline-light btn-lg">
+            <i class="bi bi-clipboard2-check me-2"></i>Review Requests
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="position-relative">
+          <div class="hero-visual-frame">
+            <!-- IMAGE PLACEHOLDER: doctor at work / clinic environment -->
+            <!-- Replace src with: {% static 'images/hero-doctor-desk.jpg' %} -->
+            <img src="https://t4.ftcdn.net/jpg/02/60/04/09/360_F_260040900_oO6YW1sHTnKxby4GcjCvtypUCWjnQRg5.jpg"
+                 alt="Doctor reviewing patient charts" style="height: 380px;">
+          </div>
+
+          <div class="hero-float-chip" style="top: -18px; left: -18px;">
+            <div class="chip-icon bg-tint-info"><i class="bi bi-calendar-week"></i></div>
+            <div>
+              <p class="chip-label">Today's Schedule</p>
+              <p class="chip-value">{{ today_appointments|default:"0" }} Appointments</p>
+            </div>
+          </div>
+
+          <div class="hero-float-chip" style="bottom: -18px; right: -10px;">
+            <div class="chip-icon bg-tint-success"><i class="bi bi-people-fill"></i></div>
+            <div>
+              <p class="chip-label">Total Patients</p>
+              <p class="chip-value">{{ total_patients|default:"128" }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================
+     QUICK NAVIGATION CARDS
+     ========================================================== -->
+<section class="container" style="margin-top: -2.5rem; position: relative; z-index: 2;">
+  <div class="row g-4">
+    <div class="col-md-4">
+      <a href="{% url 'doctor_dashboard' %}" class="action-card">
+        <div class="action-icon"><i class="bi bi-speedometer2"></i></div>
+        <h5>Dashboard</h5>
+        <p>View stats on patients, today's appointments, and pending requests.</p>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'doctor_dashboard' %}#appointments" class="action-card">
+        <div class="action-icon"><i class="bi bi-hourglass-split"></i></div>
+        <h5>Pending Requests</h5>
+        <p>Approve or reject new appointment requests from patients.</p>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'doctor_dashboard' %}" class="action-card">
+        <div class="action-icon"><i class="bi bi-people"></i></div>
+        <h5>My Patients</h5>
+        <p>Browse the full list of patients you've seen, past and upcoming.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================
+     TODAY AT A GLANCE
+     ========================================================== -->
+<section class="container my-5 py-4">
+  <div class="row align-items-center g-5">
+    <div class="col-lg-5">
+      <p class="section-eyebrow mb-2">Today at a Glance</p>
+      <h2 class="section-title">Stay ahead of your schedule</h2>
+      <p class="section-subtitle">
+        Every request is sorted by urgency so you always know what needs
+        your attention first.
+      </p>
+      <a href="{% url 'doctor_dashboard' %}" class="btn btn-primary mt-2">
+        <i class="bi bi-arrow-right-circle me-2"></i>Open Full Dashboard
+      </a>
+    </div>
+    <div class="col-lg-7">
+      <div class="row g-4">
+        <div class="col-sm-6">
+          <div class="card-medicare p-4 h-100">
+            <div class="action-icon mb-3"><i class="bi bi-bell"></i></div>
+            <h5>Instant Notifications</h5>
+            <p class="text-secondary small mb-0">New booking requests appear in your queue the moment they're submitted.</p>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="card-medicare p-4 h-100">
+            <div class="action-icon mb-3"><i class="bi bi-check2-square"></i></div>
+            <h5>One-Click Actions</h5>
+            <p class="text-secondary small mb-0">Approve or reject appointments directly from the dashboard table.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

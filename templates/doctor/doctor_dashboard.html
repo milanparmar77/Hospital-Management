@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Doctor Dashboard | MediCare+{% endblock %}
+{% block nav_doctor_dashboard %}active{% endblock %}
+
+{% block content %}
+
+<div class="page-header-bar">
+  <div class="container d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <p class="section-eyebrow mb-1">Doctor Portal</p>
+      <h2 class="section-title mb-0">Dr. {{ user.first_name|default:"Doctor" }}'s Dashboard</h2>
+    </div>
+    <span class="text-secondary small">
+      <i class="bi bi-calendar3 me-1"></i>{% now "l, F j, Y" %}
+    </span>
+  </div>
+</div>
+
+<div class="container mb-5">
+
+  <!-- ==========================================================
+       STAT CARDS — Total Patients / Today's Appointments / Pending
+       ========================================================== -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-4">
+      <div class="stat-card">
+        <div class="stat-icon tint-primary"><i class="bi bi-people-fill"></i></div>
+        <div>
+          <p class="stat-value">{{ total_patients|default:"0" }}</p>
+          <p class="stat-label">Total Patients</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card">
+        <div class="stat-icon tint-info"><i class="bi bi-calendar-week"></i></div>
+        <div>
+          <p class="stat-value">{{ today_appointments|default:"0" }}</p>
+          <p class="stat-label">Today's Appointments</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card">
+        <div class="stat-icon tint-warning"><i class="bi bi-hourglass-split"></i></div>
+        <div>
+          <p class="stat-value">{{ pending_appointments|default:"0" }}</p>
+          <p class="stat-label">Pending Requests</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       APPOINTMENT MANAGEMENT TABLE
+       ========================================================== -->
+  <div id="appointments" class="d-flex flex-wrap justify-content-between align-items-center mb-3 pt-2">
+    <h5 class="mb-0">Appointment Requests</h5>
+    <div class="d-flex gap-2">
+      <button class="btn btn-sm btn-outline-primary active" data-filter="all">All</button>
+      <button class="btn btn-sm btn-outline-primary" data-filter="pending">Pending</button>
+      <button class="btn btn-sm btn-outline-primary" data-filter="approved">Approved</button>
+      <button class="btn btn-sm btn-outline-primary" data-filter="completed">Completed</button>
+    </div>
+  </div>
+
+  <div class="table-responsive table-medicare">
+    <table class="table mb-0" id="doctorAppointmentsTable">
+      <thead>
+        <tr>
+          <th>Patient</th>
+          <th>Date &amp; Time</th>
+          <th>Visit Type</th>
+          <th>Status</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appointment in page_obj %}
+
+        <tr data-status="{{ appointment.status|lower }}">
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <span class="patient-avatar-sm">{{ appointment.patient.user.first_name|first|upper }}</span>
+              <div>
+                <div class="fw-semibold">{{ appointment.patient.user.first_name }}</div>
+                <div class="small text-secondary">{{ appointment.patient.phone }}</div>
+              </div>
+            </div>
+          </td>
+          <td>{{ appointment.date }} &middot; {{ appointment.time }}</td>
+          <td>{{ appointment.get_visit_type_display }}</td>
+          <td><span class="status-badge status-{{ appointment.status|lower }}">{{ appointment.status }}</span></td>
+          <td class="text-end">
+            {% if appointment.status == "Pending" %}
+            <form method="post" action="{% url 'update_status' appointment.id %}" class="d-inline">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="approve">
+              <button type="submit" class="btn btn-approve btn-sm">
+                <i class="bi bi-check-lg me-1"></i>Approve
+              </button>
+            </form>
+            <form method="post" action="{% url 'update_status' appointment.id %}" class="d-inline">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="reject">
+              <button type="submit" class="btn btn-reject btn-sm">
+                <i class="bi bi-x-lg me-1"></i>Reject
+              </button>
+            </form>
+            {% elif appointment.status == "Approved" %}
+            <form method="post" action="{% url 'update_status' appointment.id %}" class="d-inline">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="complete">
+              <button type="submit" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-check2-square me-1"></i>Mark Completed
+              </button>
+            </form>
+            {% else %}
+            <span class="text-secondary small">No actions</span>
+            {% endif %}
+          </td>
+        </tr>
+
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <nav class="mt-4">
+      <ul class="pagination justify-content-center">
+
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+            Previous
+          </a>
+        </li>
+        {% endif %}
+
+        <li class="page-item active">
+          <span class="page-link">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          </span>
+        </li>
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+            Next
+          </a>
+        </li>
+        {% endif %}
+
+      </ul>
+    </nav>
+
+    <!-- Empty state — shown via JS when a filter has no matching rows -->
+    <div class="empty-state d-none" id="doctorNoResultsState">
+      <i class="bi bi-clipboard-x"></i>
+      <p class="mb-0 fw-semibold">No appointments in this category.</p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Status filter for the doctor's appointment table
+  document.addEventListener('DOMContentLoaded', function () {
+    const filterButtons = document.querySelectorAll('[data-filter]');
+    const rows = document.querySelectorAll('#doctorAppointmentsTable tbody tr');
+    const emptyState = document.getElementById('doctorNoResultsState');
+
+    filterButtons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        filterButtons.forEach(function (b) { b.classList.remove('active'); });
+        button.classList.add('active');
+
+        const filter = button.getAttribute('data-filter');
+        let visibleCount = 0;
+
+        rows.forEach(function (row) {
+          const matches = filter === 'all' || row.getAttribute('data-status') === filter;
+          row.classList.toggle('d-none', !matches);
+          if (matches) visibleCount++;
+        });
+
+        emptyState.classList.toggle('d-none', visibleCount !== 0);
+      });
+    });
+
+    // Confirm before rejecting an appointment (reject forms only)
+    document.querySelectorAll('form').forEach(function (form) {
+      const action = form.querySelector('input[name="action"]');
+      if (action && action.value === 'reject') {
+        form.addEventListener('submit', function (e) {
+          if (!confirm('Are you sure you want to reject this appointment request?')) {
+            e.preventDefault();
+          }
+        });
+      }
+    });
+  });
+</script>
+{% endblock %}

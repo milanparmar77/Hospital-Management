@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Welcome | MediCare+{% endblock %}
+{% block nav_patient_home %}active{% endblock %}
+
+{% block content %}
+
+<!-- ==========================================================
+     HERO SECTION
+     ========================================================== -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <p class="eyebrow mb-3">Patient Portal</p>
+        <h1 class="mb-3">
+          Welcome back, <span style="color:#9b0909de;">{{ user.first_name|default:"there" }}</span>.
+        </h1>
+        <p class="lead mb-4">
+          Book appointments, track your visit history, and stay on top of your
+          care — all from one simple dashboard.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="{% url 'book_appointment' %}" class="btn btn-accent btn-lg">
+            <i class="bi bi-calendar-plus me-2"></i>Book an Appointment
+          </a>
+          <a href="{% url 'patient_dashboard' %}" class="btn btn-outline-light btn-lg">
+            <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="position-relative">
+          <div class="hero-visual-frame">
+            <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=1200&auto=format&fit=crop"
+                 alt="Doctor consulting with a patient at MediCare+"
+                 style="height: 380px;">
+          </div>
+
+          <div class="hero-float-chip" style="top: -18px; left: -18px;">
+            <div class="chip-icon bg-tint-success"><i class="bi bi-check-circle-fill"></i></div>
+            <div>
+              <p class="chip-label">Appointment</p>
+              <p class="chip-value">Confirmed</p>
+            </div>
+          </div>
+
+          <div class="hero-float-chip" style="bottom: -18px; right: -10px;">
+            <div class="chip-icon bg-tint-info"><i class="bi bi-people-fill"></i></div>
+            <div>
+              <p class="chip-label">Specialists</p>
+              <p class="chip-value">40+ Doctors</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--  QUICK ACTIONS  -->
+<section class="container" style="margin-top: -2.5rem; position: relative; z-index: 2;">
+  <div class="row g-4">
+    <div class="col-md-4">
+      <a href="{% url 'book_appointment' %}" class="action-card">
+        <div class="action-icon"><i class="bi bi-calendar-plus"></i></div>
+        <h5>Book Appointment</h5>
+        <p>Choose a doctor, pick a date and time, and request your visit in under a minute.</p>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'patient_appointments' %}" class="action-card">
+        <div class="action-icon"><i class="bi bi-list-check"></i></div>
+        <h5>My Appointments</h5>
+        <p>Track the status of every visit — pending, approved, completed, or cancelled.</p>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'patient_dashboard' %}" class="action-card">
+        <div class="action-icon"><i class="bi bi-speedometer2"></i></div>
+        <h5>My Dashboard</h5>
+        <p>See your visit history and stats at a glance, all in one place.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- HOSPITAL INFO / WHY CHOOSE US -->
+<section class="container my-5 py-4" id="about">
+  <div class="row align-items-center g-5">
+    <div class="col-lg-5">
+      <p class="section-eyebrow mb-2">Why MediCare+</p>
+      <h2 class="section-title">Care that fits around your life</h2>
+      <p class="section-subtitle">
+        We built MediCare+ to remove the friction from booking and tracking
+        medical appointments — clear statuses, real doctors, no phone queues.
+      </p>
+    </div>
+    <div class="col-lg-7">
+      <div class="row g-4">
+        <div class="col-sm-6">
+          <div class="card-medicare p-4 h-100">
+            <div class="action-icon mb-3"><i class="bi bi-shield-check"></i></div>
+            <h5>Verified Doctors</h5>
+            <p class="text-secondary small mb-0">Every specialist on MediCare+ is credentialed and reviewed before joining.</p>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="card-medicare p-4 h-100">
+            <div class="action-icon mb-3"><i class="bi bi-clock-history"></i></div>
+            <h5>Real-Time Status</h5>
+            <p class="text-secondary small mb-0">Know exactly where your appointment stands — no guesswork, no waiting on hold.</p>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="card-medicare p-4 h-100">
+            <div class="action-icon mb-3"><i class="bi bi-phone"></i></div>
+            <h5>Book From Anywhere</h5>
+            <p class="text-secondary small mb-0">Fully responsive — book or check appointments from any device.</p>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="card-medicare p-4 h-100">
+            <div class="action-icon mb-3"><i class="bi bi-headset"></i></div>
+            <h5>Support When Needed</h5>
+            <p class="text-secondary small mb-0">Reach our care team any time you have a question about your visit.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

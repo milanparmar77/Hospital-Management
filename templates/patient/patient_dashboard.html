@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}My Dashboard | MediCare+{% endblock %}
+{% block nav_patient_dashboard %}active{% endblock %}
+
+{% block content %}
+
+<div class="page-header-bar">
+  <div class="container d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <p class="section-eyebrow mb-1">Patient Dashboard</p>
+      <h2 class="section-title mb-0">Hi {{ user.first_name|default:"there" }}, here's your overview</h2>
+    </div>
+    <a href="{% url 'book_appointment' %}" class="btn btn-accent">
+      <i class="bi bi-calendar-plus me-2"></i>Book New Appointment
+    </a>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ==========================================================
+       VITALS STRIP — quick stats
+       Replace these with annotated counts from the view context,
+       e.g. {{ total_appointments }}, {{ pending_count }}, etc.
+       ========================================================== -->
+  <div class="vitals-strip mb-4">
+
+    <div class="vital-item">
+      <p class="vital-label"><i class="bi bi-calendar3"></i>Total Appointments</p>
+      <p class="vital-value">{{ total_appointments }}</p>
+    </div>
+    <div class="vital-item">
+      <p class="vital-label"><i class="bi bi-hourglass-split"></i>Pending</p>
+      <p class="vital-value">{{ pending_appointments }}</p>
+    </div>
+    <div class="vital-item">
+      <p class="vital-label"><i class="bi bi-hourglass-split"></i>Approved</p>
+      <p class="vital-value">{{ approved_appointments }}</p>
+    </div>    
+    <div class="vital-item">
+      <p class="vital-label"><i class="bi bi-check2-circle"></i>Completed</p>
+      <p class="vital-value">{{ completed_appointments|default:"0" }}</p>
+    </div>
+    
+  </div>
+
+  <div class="row g-4 mb-4">
+    <!-- ==========================================================
+         RECENT APPOINTMENTS TABLE
+         ========================================================== -->
+    <div class="col-lg-8">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Recent Appointments</h5>
+        <a href="{% url 'patient_appointments' %}" class="small fw-semibold text-decoration-none">
+          View all <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="table-responsive table-medicare">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              <th>Doctor</th>
+              <th>Date &amp; Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for appointment in recent_appointments %}
+
+            <tr>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <span class="patient-avatar-sm">{{ appointment.doctor.user.first_name|first|upper }}</span>
+                  <div>
+                    <div class="fw-semibold">Dr. {{ appointment.doctor.user.first_name|default:"Doctor" }} {{appointment.doctor.user.last_name|default:""}}</div>
+                    <div class="small text-secondary">{{ appointment.doctor.specialization }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>{{ appointment.date }} &middot; {{ appointment.time }}</td>
+              <td>
+                <span class="status-badge status-{{ appointment.status|lower }}">
+                  {{ appointment.status }}
+                </span>
+              </td>
+            </tr>
+            
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ==========================================================
+         SIDE PANEL — profile snapshot / reminders
+         ========================================================== -->
+    <div class="col-lg-4">
+      <div class="card-medicare p-4 mb-4">
+        <h6 class="mb-3"><i class="bi bi-person-circle me-2" style="color:var(--color-primary);"></i>Profile</h6>
+        <ul class="list-unstyled small text-secondary d-flex flex-column gap-2 mb-3">
+          <li><i class="bi bi-envelope me-2"></i>{{ user.email|default:"patient@example.com" }}</li>
+          <li><i class="bi bi-telephone me-2"></i>{{ user.phone|default:"+91 90000 00000" }}</li>
+        </ul>
+        <a href="{% url 'edit_profile' %}" class="btn btn-outline-primary btn-sm w-100">Edit Profile</a>
+      </div>
+
+      <div class="card-medicare p-4" style="background: var(--color-primary-light); box-shadow:none;">
+        <div class="d-flex gap-2 mb-2">
+          <i class="bi bi-info-circle-fill" style="color: var(--color-primary);"></i>
+          <h6 class="mb-0">Reminder</h6>
+        </div>
+        <p class="small text-secondary mb-0">
+          You have <strong>{{ pending_appointments|default:"0" }} pending</strong> appointment requests
+          awaiting doctor approval.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

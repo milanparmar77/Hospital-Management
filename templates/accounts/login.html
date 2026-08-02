@@ -1,0 +1,211 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | MediCare+</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+
+<body class="auth-body">
+
+  <div class="auth-wrapper">
+
+    <a href="{% url 'patient_home' %}" class="auth-back-home">
+      <i class="bi bi-arrow-left"></i> Back to home
+    </a>
+
+    <div class="auth-brand">
+      <div class="brand-mark"><i class="bi bi-heart-pulse-fill"></i></div>
+      <h1>MediCare+</h1>
+      <p>Sign in to manage your appointments</p>
+    </div>
+
+    <div class="auth-card">
+      <h2>Welcome back</h2>
+      <p class="auth-subtitle">Enter your credentials to access your portal.</p>
+
+      <!-- ==========================================================
+           TOP-LEVEL LOGIN ERROR
+           Works with either:
+           - a plain context flag/string, e.g. {'login_error': '...'}
+           - Django's messages framework
+           - form.non_field_errors if you're using a Django Form
+           Adjust the condition below to match whichever your view uses.
+           ========================================================== -->
+      {% if form.non_field_errors %}
+      {% for error in form.non_field_errors %}
+      <div class="auth-alert-error" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <div>{{ error }}</div>
+      </div>
+      {% endfor %}
+      {% elif login_error %}
+      <div class="auth-alert-error" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        {% if login_error == True %}
+        <div>Invalid username/email or password. Please try again.</div>
+        {% else %}
+        <div>{{ login_error }}</div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      {% if messages %}
+      {% for message in messages %}
+
+      <div class="
+            {% if message.tags == 'success' %}
+                auth-alert-success
+            {% elif message.tags == 'error' %}
+                auth-alert-error
+            {% elif message.tags == 'warning' %}
+                auth-alert-warning
+            {% else %}
+                auth-alert-info
+            {% endif %}
+        " role="alert">
+
+        {% if message.tags == 'success' %}
+          <i class="bi bi-check-circle-fill"></i>
+        {% elif message.tags == 'error' %}
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        {% elif message.tags == 'warning' %}
+          <i class="bi bi-exclamation-circle-fill"></i>
+        {% else %}
+          <i class="bi bi-info-circle-fill"></i>
+        {% endif %}
+
+        <div>{{ message }}</div>
+      </div>
+
+      {% endfor %}
+      {% endif %}
+
+      <form method="POST" action="{% url 'login' %}" class="auth-form" novalidate>
+        {% csrf_token %}
+
+        <!-- ==========================================================
+             OPTIONAL ROLE SELECTION
+             Per your spec this is optional — if your auth backend can
+             already tell a Patient and Doctor apart from the username/
+             email alone (e.g. via a OneToOne profile lookup), you can
+             delete this block entirely and skip straight to the
+             username field below. Kept here as two simple radios in
+             case you want the user to declare which portal they're
+             entering (useful if a person could theoretically exist as
+             both, or just to set the post-login redirect explicitly).
+             ========================================================== -->
+        <!-- <label class="d-block mb-2">Login as</label>
+        <div class="role-select-group">
+          <div class="role-option">
+            <input
+              type="radio"
+              name="role"
+              id="roleSelectPatient"
+              value="patient"
+              {% if request.POST.role != "doctor" %}checked{% endif %}>
+            <label for="roleSelectPatient">
+              <i class="bi bi-person-fill"></i>
+              Patient
+            </label>
+          </div>
+          <div class="role-option">
+            <input
+              type="radio"
+              name="role"
+              id="roleSelectDoctor"
+              value="doctor"
+              {% if request.POST.role == "doctor" %}checked{% endif %}>
+            <label for="roleSelectDoctor">
+              <i class="bi bi-clipboard2-pulse-fill"></i>
+              Doctor
+            </label>
+          </div>
+        </div> -->
+
+        <div class="mb-3">
+          <label for="loginIdentifier">Username or Email</label>
+          <div class="input-icon-group">
+            <i class="bi bi-person"></i>
+            <input type="text" class="form-control {% if login_error or form.username.errors %}is-invalid{% endif %}"
+              id="loginIdentifier" name="username" placeholder="you@example.com"
+              value="{{ request.POST.username|default:'' }}" required autofocus>
+          </div>
+          {% if form.username.errors %}
+          <div class="invalid-feedback d-block">{{ form.username.errors|join:", " }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-2">
+          <label for="loginPassword">Password</label>
+          <div class="input-icon-group">
+            <i class="bi bi-lock"></i>
+            <input type="password"
+              class="form-control has-toggle {% if login_error or form.password.errors %}is-invalid{% endif %}"
+              id="loginPassword" name="password" placeholder="Enter your password" required>
+            <button type="button" class="password-toggle-btn" data-toggle-target="loginPassword"
+              aria-label="Show password">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+          {% if form.password.errors %}
+          <div class="invalid-feedback d-block">{{ form.password.errors|join:", " }}</div>
+          {% endif %}
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="rememberMe" name="remember_me">
+            <label class="form-check-label small" for="rememberMe">Remember me</label>
+          </div>
+          <a href="#" class="small text-decoration-none">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn btn-auth-primary w-100">
+          <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+        </button>
+      </form>
+
+      <div class="auth-divider">New patient?</div>
+
+      <a href="{% url 'register' %}" class="btn btn-outline-primary w-100">
+        <i class="bi bi-person-plus me-2"></i>Create a Patient Account
+      </a>
+    </div>
+
+    <p class="auth-footer-link">
+      Doctor accounts are created by hospital staff —
+      use the role selector above with the credentials provided to you.
+    </p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Show/hide password toggle — works for any input wired with
+    // data-toggle-target pointing at the input's id.
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('.password-toggle-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          const input = document.getElementById(btn.getAttribute('data-toggle-target'));
+          const icon = btn.querySelector('i');
+          const isHidden = input.type === 'password';
+          input.type = isHidden ? 'text' : 'password';
+          icon.classList.toggle('bi-eye', !isHidden);
+          icon.classList.toggle('bi-eye-slash', isHidden);
+          btn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>

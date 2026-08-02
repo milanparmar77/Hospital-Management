@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}My Appointments | MediCare+{% endblock %}
+{% block nav_view_appointments %}active{% endblock %}
+
+{% block content %}
+
+<div class="page-header-bar">
+  <div class="container d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <p class="section-eyebrow mb-1">Patient Portal</p>
+      <h2 class="section-title mb-0">My Appointments</h2>
+    </div>
+    <a href="{% url 'book_appointment' %}" class="btn btn-accent">
+      <i class="bi bi-calendar-plus me-2"></i>Book New Appointment
+    </a>
+  </div>
+</div>
+
+<div class="container mb-5">
+
+  <!-- ==========================================================
+       STATUS FILTER TABS
+       ========================================================== -->
+  <ul class="nav nav-pills mb-4 gap-2" id="statusFilterTabs">
+    <li class="nav-item">
+      <button class="nav-link active rounded-pill-soft" data-filter="all">All</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link rounded-pill-soft" data-filter="pending">Pending</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link rounded-pill-soft" data-filter="approved">Approved</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link rounded-pill-soft" data-filter="completed">Completed</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link rounded-pill-soft" data-filter="cancelled">Cancelled</button>
+    </li>
+  </ul>
+
+  <div class="table-responsive table-medicare">
+    <table class="table mb-0" id="appointmentsTable">
+      <thead>
+        <tr>
+          <th>Doctor</th>
+          <th>Specialization</th>
+          <th>Date &amp; Time</th>
+          <th>Visit Type</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appointment in appointments %}
+        <tr data-status="{{ appointment.status|lower }}">
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <span class="patient-avatar-sm">{{ appointment.doctor.user.first_name|first|upper }}</span>
+              <span class="fw-semibold">Dr. {{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }}</span>
+            </div>
+          </td>
+          <td>{{ appointment.doctor.specialization }}</td>
+          <td>{{ appointment.date }} &middot; {{ appointment.time }}</td>
+          <td>{{ appointment.get_visit_type_display }}</td>
+          <td><span class="status-badge status-{{ appointment.status|lower }}">{{ appointment.status }}</span></td>
+        </tr>
+  
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Empty state — shown via JS when a filter has no matching rows -->
+    <div class="empty-state d-none" id="noResultsState">
+      <i class="bi bi-calendar-x"></i>
+      <p class="mb-0 fw-semibold">No appointments in this category yet.</p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Simple client-side status filter for the appointments table
+  document.addEventListener('DOMContentLoaded', function () {
+    const filterButtons = document.querySelectorAll('#statusFilterTabs .nav-link');
+    const rows = document.querySelectorAll('#appointmentsTable tbody tr');
+    const emptyState = document.getElementById('noResultsState');
+
+    filterButtons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        filterButtons.forEach(function (b) { b.classList.remove('active'); });
+        button.classList.add('active');
+
+        const filter = button.getAttribute('data-filter');
+        let visibleCount = 0;
+
+        rows.forEach(function (row) {
+          const matches = filter === 'all' || row.getAttribute('data-status') === filter;
+          row.classList.toggle('d-none', !matches);
+          if (matches) visibleCount++;
+        });
+
+        emptyState.classList.toggle('d-none', visibleCount !== 0);
+      });
+    });
+  });
+</script>
+{% endblock %}

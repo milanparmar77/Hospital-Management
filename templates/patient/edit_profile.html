@@ -1,0 +1,262 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile | MediCare+</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+</head>
+<body class="profile-body">
+
+  <div class="profile-page-wrapper">
+
+    <a href="{% url 'patient_dashboard' %}" class="profile-back-link">
+      <i class="bi bi-arrow-left"></i> Back to dashboard
+    </a>
+
+    <div class="profile-page-header">
+      <h1>Edit Profile</h1>
+      <p>Update your personal details and contact information.</p>
+    </div>
+
+    <!-- Top-level success / error feedback -->
+    {% if messages %}
+      {% for message in messages %}
+        {% if "success" in message.tags %}
+        <div class="profile-alert-success" role="alert">
+          <i class="bi bi-check-circle-fill"></i>
+          <div>{{ message }}</div>
+        </div>
+        {% else %}
+        <div class="profile-alert-error" role="alert">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <div>{{ message }}</div>
+        </div>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {% if form.non_field_errors %}
+      {% for error in form.non_field_errors %}
+      <div class="profile-alert-error" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <div>{{ error }}</div>
+      </div>
+      {% endfor %}
+    {% endif %}
+
+    <div class="card profile-card">
+      <div class="profile-card-banner"></div>
+
+      <div class="profile-card-body">
+
+        <!-- ====================================================
+             AVATAR BLOCK — overlaps the gradient banner above.
+             Falls back to initials if no profile image is set.
+             ==================================================== -->
+        <div class="profile-avatar-block">
+          <div class="profile-avatar-frame">
+
+            {% if request.user.patient.profile_image %}
+              <!-- Existing uploaded image — adjust the field path
+                   (request.user.patient.profile_image.url) to match
+                   your actual model/ImageField name. -->
+              <img
+                src="{{ request.user.patient.profile_image.url }}"
+                alt="Profile photo"
+                class="avatar-img"
+                id="avatarPreviewImg">
+            {% else %}
+              <!-- Fallback: initials circle when no photo has been
+                   uploaded yet. Swap to an <img> once profile_image
+                   is set. -->
+              <div class="avatar-fallback" id="avatarFallback">
+                {{ request.user.first_name|first|upper|default:"P" }}{{ request.user.last_name|first|upper }}
+              </div>
+              <img src="" alt="Profile photo preview" class="avatar-img d-none" id="avatarPreviewImg">
+            {% endif %}
+
+            <label for="profileImageInput" class="avatar-edit-btn" title="Change profile photo">
+              <i class="bi bi-camera-fill"></i>
+            </label>
+            <!-- File input lives outside the <form> visually but must
+                 stay INSIDE it logically — see the form below where
+                 this same id is referenced; this label/button pair
+                 is purely a styled trigger for that real file input. -->
+          </div>
+
+          <div class="profile-avatar-meta">
+            <p class="avatar-name">{{ request.user.first_name }} {{ request.user.last_name }}</p>
+            <span class="avatar-role-badge"><i class="bi bi-person-fill"></i> Patient</span>
+          </div>
+        </div>
+
+        <!-- ====================================================
+             EDIT PROFILE FORM
+             enctype="multipart/form-data" is REQUIRED for the
+             optional file upload field to actually submit — a
+             very common bug if this is left off.
+             ==================================================== -->
+        <form method="POST" action="{% url 'edit_profile' %}" enctype="multipart/form-data" class="profile-form" novalidate>
+          {% csrf_token %}
+
+          <!-- Hidden-until-triggered file input, opened by the camera
+               icon button above via the matching label `for` attribute. -->
+          <input
+            type="file"
+            id="profileImageInput"
+            name="profile_image"
+            accept="image/png, image/jpeg, image/webp"
+            class="d-none">
+          <p class="profile-avatar-hint">
+            <i class="bi bi-info-circle"></i> JPG, PNG or WEBP. Max 2MB. Optional — click the camera icon to change.
+          </p>
+          {% if form.profile_image.errors %}
+          <div class="invalid-feedback d-block mb-3">{{ form.profile_image.errors|join:", " }}</div>
+          {% endif %}
+
+          <div class="row g-3 mt-1">
+            <div class="col-md-6">
+              <label for="firstName">First Name</label>
+              <div class="input-icon-group">
+                <i class="bi bi-person"></i>
+                <input
+                  type="text"
+                  class="form-control {% if form.first_name.errors %}is-invalid{% endif %}"
+                  id="firstName"
+                  name="first_name"
+                  placeholder="Aarav"
+                  value="{{ form.first_name.value|default:request.user.first_name }}"
+                  required>
+              </div>
+              {% if form.first_name.errors %}
+              <div class="invalid-feedback d-block">{{ form.first_name.errors|join:", " }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label for="lastName">Last Name</label>
+              <div class="input-icon-group">
+                <i class="bi bi-person"></i>
+                <input
+                  type="text"
+                  class="form-control {% if form.last_name.errors %}is-invalid{% endif %}"
+                  id="lastName"
+                  name="last_name"
+                  placeholder="Shah"
+                  value="{{ form.last_name.value|default:request.user.last_name }}"
+                  required>
+              </div>
+              {% if form.last_name.errors %}
+              <div class="invalid-feedback d-block">{{ form.last_name.errors|join:", " }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="row g-3 mt-3">
+            <div class="col-md-6">
+              <label for="email">Email</label>
+              <div class="input-icon-group">
+                <i class="bi bi-envelope"></i>
+                <input
+                  type="email"
+                  class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+                  id="email"
+                  name="email"
+                  placeholder="you@example.com"
+                  value="{{ form.email.value|default:request.user.email }}"
+                  required>
+              </div>
+              {% if form.email.errors %}
+              <div class="invalid-feedback d-block">{{ form.email.errors|join:", " }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label for="phone">Phone Number</label>
+              <div class="input-icon-group">
+                <i class="bi bi-telephone"></i>
+                <input
+                  type="tel"
+                  class="form-control {% if form.phone.errors %}is-invalid{% endif %}"
+                  id="phone"
+                  name="phone"
+                  placeholder="+91 90000 00000"
+                  value="{{ form.phone.value|default:request.user.patient.phone }}"
+                  required>
+              </div>
+              {% if form.phone.errors %}
+              <div class="invalid-feedback d-block">{{ form.phone.errors|join:", " }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Read-only reference field — username is shown but not
+               editable here, since changing it usually has wider
+               implications (login, references elsewhere). Remove the
+               `disabled`/hidden-name pairing if you DO want it editable;
+               note that `disabled` fields are NOT submitted by browsers,
+               which is why there's no `name` attribute conflict risk. -->
+          <div class="row g-3 mt-3">
+            <div class="col-md-6">
+              <label for="usernameDisplay">Username</label>
+              <div class="input-icon-group">
+                <i class="bi bi-at"></i>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="usernameDisplay"
+                  value="{{ request.user.username }}"
+                  disabled>
+              </div>
+              <p class="field-static-hint">Username cannot be changed here. Contact support if needed.</p>
+            </div>
+          </div>
+
+          <div class="profile-form-actions">
+            <button type="submit" class="btn btn-profile-save">
+              <i class="bi bi-check2-circle me-2"></i>Save Changes
+            </button>
+            <a href="{% url 'patient_dashboard' %}" class="btn btn-profile-cancel">
+              Cancel
+            </a>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Live preview of a newly selected profile image, swapped in
+    // place of the existing photo / initials fallback before the
+    // form is even submitted.
+    document.addEventListener('DOMContentLoaded', function () {
+      const fileInput = document.getElementById('profileImageInput');
+      const previewImg = document.getElementById('avatarPreviewImg');
+      const fallback = document.getElementById('avatarFallback');
+
+      fileInput.addEventListener('change', function () {
+        const file = fileInput.files && fileInput.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          previewImg.src = event.target.result;
+          previewImg.classList.remove('d-none');
+          if (fallback) fallback.classList.add('d-none');
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+  </script>
+</body>
+</html>
