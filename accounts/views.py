@@ -88,8 +88,8 @@ def user_login(request):
             return redirect('patient_home')
         elif hasattr(request.user, 'doctor'):
             return redirect('doctor_home')
-        else:
-            return redirect('admin_dashboard')
+        # else:
+        #     return redirect('admin_dashboard')
 
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -133,6 +133,6 @@ def user_logout(request):
 
     return response
 
-@login_required
-def admin_dashboard(request):
-    return render(request, 'accounts/admin_dashboard.html')
+# @login_required
+# def admin_dashboard(request):
+#     return render(request, 'admin/dashboard.html')   
