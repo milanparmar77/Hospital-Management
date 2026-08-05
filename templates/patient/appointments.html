@@ -49,6 +49,7 @@
           <th>Date &amp; Time</th>
           <th>Visit Type</th>
           <th>Status</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -56,16 +57,28 @@
         <tr data-status="{{ appointment.status|lower }}">
           <td>
             <div class="d-flex align-items-center gap-2">
-              <span class="patient-avatar-sm">{{ appointment.doctor.user.first_name|first|upper }}</span>
-              <span class="fw-semibold">Dr. {{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }}</span>
+              <!-- <span class="patient-avatar-sm">{{ appointment.doctor.user.first_name|first|upper }}</span> -->
+              <span class="fw-semibold">Dr. {{ appointment.doctor.user.first_name }} {{appointment.doctor.user.last_name }}</span>
             </div>
           </td>
           <td>{{ appointment.doctor.specialization }}</td>
           <td>{{ appointment.date }} &middot; {{ appointment.time }}</td>
           <td>{{ appointment.get_visit_type_display }}</td>
           <td><span class="status-badge status-{{ appointment.status|lower }}">{{ appointment.status }}</span></td>
+          <td>
+
+            {% if appointment.status == "Pending" or appointment.status == "Approved" %}
+
+            <form method="post" action="{% url 'cancel_appointment' appointment.id %}">
+              {% csrf_token %}
+              <button class="btn btn-danger btn-sm">
+                Cancel Appointment
+              </button>
+            </form>
+            {% endif %}
+          </td>
         </tr>
-  
+
         {% endfor %}
       </tbody>
     </table>

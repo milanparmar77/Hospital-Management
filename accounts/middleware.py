@@ -12,7 +12,10 @@ class RoleMiddleware:
                 if not hasattr(request.user, 'patient'):
                     return redirect('login')
                 
-            if path.startswith('/doctor/'):
+            if (
+                path.startswith('/doctor/')
+                and not path.startswith('/doctor/profile/')
+            ):
                 if not hasattr(request.user, 'doctor'):
                     return redirect('login')
                 

@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Doctor Profile | MediCare+
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header-bar">
+    <div class="container">
+        <h2 class="section-title">
+            Doctor Profile
+        </h2>
+    </div>
+</div>
+
+<div class="container my-5">
+
+    <div class="card shadow border-0">
+
+        <div class="card-body p-5">
+
+            <div class="row">
+
+                <!-- Doctor Image -->
+
+                <div class="col-md-4 text-center">
+
+                    <img src="{% static 'images/doctor.png' %}" class="img-fluid rounded-circle border" width="220">
+
+                </div>
+
+                <!-- Doctor Information -->
+
+                <div class="col-md-8">
+
+                    <h2>
+
+                        Dr.
+                        {{ doctor.user.first_name }}
+                        {{ doctor.user.last_name }}
+
+                    </h2>
+
+                    <h5 class="text-primary">
+
+                        {{ doctor.specialization }}
+
+                    </h5>
+
+                    <hr>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <strong>Qualification</strong>
+
+                            <p>{{ doctor.qualification }}</p>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <strong>Department</strong>
+
+                            <p>{{ doctor.department }}</p>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <strong>Experience</strong>
+
+                            <p>{{ doctor.experience }} Years</p>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <strong>Consultation Fee</strong>
+
+                            <p>₹ {{ doctor.consultation_fee }}</p>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <strong>Available Days</strong>
+
+                            <p>{{ doctor.available_days }}</p>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <strong>Available Time</strong>
+
+                            <p>{{ doctor.available_time }}</p>
+
+                        </div>
+
+                    </div>
+
+                    <a href="{% url 'book_appointment' %}" class="btn btn-primary mt-3">
+
+                        Book Appointment
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

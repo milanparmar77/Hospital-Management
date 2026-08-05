@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from appointment.models import Appointment
 from .models import Patient
@@ -78,3 +78,17 @@ def edit_profile(request):
         return render(request, "patient/edit_profile.html", {"form": form})
     
     return render(request, "patient/edit_profile.html", {})
+
+def cancel_appointment(request, appointment_id):
+    appointment = get_object_or_404(
+        Appointment,
+        id=appointment_id,
+        patient=request.user.patient
+    )
+
+    if appointment.status in ['Pending', 'Approved']:
+        appointment.status = 'Cancelled'
+        appointment.save()
+        messages.success(request, "Your appointment has been cancelled successfully.")
+
+    return redirect('view_appointments')

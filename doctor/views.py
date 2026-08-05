@@ -1,11 +1,10 @@
 from datetime import date
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from appointment.models import Appointment
 from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404
 import traceback
-
+from .models import Doctor
 @login_required
 def doctor_home(request):
     doctor = request.user.doctor
@@ -56,7 +55,17 @@ def doctor_dashboard(request):
         'page_obj': page_obj,
     })
 
+def doctor_profile(request, doctor_id):
+    doctor = get_object_or_404(
+        Doctor,
+        id=doctor_id
+    )
 
+    return render(request,"doctor/doctor_profile.html",
+        {
+            "doctor": doctor
+        }
+    )
     
 @login_required
 def update_status(request, id):

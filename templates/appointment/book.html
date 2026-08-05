@@ -40,7 +40,8 @@
             <i class="bi bi-3-circle"></i>
             <div>
               <p class="fw-semibold mb-0">Wait for approval</p>
-              <p class="small mb-0" style="color:#CDE7E4;">The doctor confirms your request — you'll see the status update instantly.</p>
+              <p class="small mb-0" style="color:#CDE7E4;">The doctor confirms your request — you'll see the status
+                update instantly.</p>
             </div>
           </div>
         </div>
@@ -48,7 +49,7 @@
         <!-- IMAGE PLACEHOLDER: small illustration / calendar graphic -->
         <!-- Replace src with: {% static 'images/appointment-illustration.svg' %} -->
         <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=600&auto=format&fit=crop"
-             alt="Calendar and stethoscope illustration" class="rounded-3 mt-4" style="opacity:0.9;">
+          alt="Calendar and stethoscope illustration" class="rounded-3 mt-4" style="opacity:0.9;">
       </div>
     </div>
 
@@ -64,19 +65,71 @@
           {% csrf_token %}
 
           <div class="row g-4">
-            <!-- Doctor selection -->
+            <!-- Doctor Selection -->
             <div class="col-md-12">
-              <label for="doctorSelect">Select Doctor *</label>
-              <select class="form-select" id="doctorSelect" name="doctor" required>
-                <option value="" selected disabled>Choose a specialist...</option>
+
+              <label class="form-label fw-semibold mb-3">
+                Select Doctor *
+              </label>
+
+              <div class="row">
+
                 {% for doctor in doctors %}
 
-                <option value="{{ doctor.id }}">
-                  Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }} ({{ doctor.specialization }})
-                </option>
-            
+                <div class="col-md-6 mb-4">
+
+                  <div class="card shadow-sm border-0 h-100">
+
+                    <div class="card-body">
+
+                      <h5 class="card-title mb-1">
+                        Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}
+                      </h5>
+
+                      <p class="text-primary mb-2">
+                        {{ doctor.specialization }}
+                      </p>
+
+                      <p class="mb-1">
+                        <strong>Fee :</strong>
+                        ₹{{ doctor.consultation_fee }}
+                      </p>
+
+                      <p class="mb-3">
+                        <strong>Experience :</strong>
+                        {{ doctor.experience }} Years
+                      </p>
+
+                      <div class="d-flex justify-content-between">
+
+                        <a href="{% url 'doctor_profile' doctor.id %}" class="btn btn-outline-primary btn-sm">
+                          View Profile
+                        </a>
+
+                        <div class="form-check">
+
+                          <input class="form-check-input" type="radio" name="doctor" value="{{ doctor.id }}" required>
+
+                          <label class="form-check-label">
+
+                            Select
+
+                          </label>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
                 {% endfor %}
-              </select>
+
+              </div>
+
             </div>
 
             <!-- Date -->
@@ -101,7 +154,7 @@
             <div class="col-md-12">
               <label for="visitReason">Reason for Visit</label>
               <textarea class="form-control" id="visitReason" name="reason" rows="4"
-                        placeholder="Briefly describe your symptoms or reason for the visit (optional)"></textarea>
+                placeholder="Briefly describe your symptoms or reason for the visit (optional)"></textarea>
             </div>
 
             <!-- Contact number -->
@@ -110,7 +163,7 @@
               <div class="input-icon-group">
                 <i class="bi bi-telephone"></i>
                 <input type="tel" class="form-control" id="contactNumber" name="contact_number"
-                       placeholder="+91 90000 00000" required>
+                  placeholder="+91 90000 00000" required>
               </div>
             </div>
 
@@ -138,6 +191,108 @@
 </div>
 
 {% endblock %}
+
+{% for doctor in doctors %}
+
+<div class="modal fade" id="doctorModal{{ doctor.id }}" tabindex="-1" aria-hidden="true">
+
+  <div class="modal-dialog modal-lg">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+
+        <h4 class="modal-title">
+
+          Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}
+
+        </h4>
+
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
+      </div>
+
+      <div class="modal-body">
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+
+            <strong>Specialization</strong>
+
+            <p>{{ doctor.specialization }}</p>
+
+          </div>
+
+          <div class="col-md-6 mb-3">
+
+            <strong>Qualification</strong>
+
+            <p>{{ doctor.qualification }}</p>
+
+          </div>
+
+          <div class="col-md-6 mb-3">
+
+            <strong>Experience</strong>
+
+            <p>{{ doctor.experience }} Years</p>
+
+          </div>
+
+          <div class="col-md-6 mb-3">
+
+            <strong>Department</strong>
+
+            <p>{{ doctor.department }}</p>
+
+          </div>
+
+          <div class="col-md-6 mb-3">
+
+            <strong>Consultation Fee</strong>
+
+            <p>₹{{ doctor.consultation_fee }}</p>
+
+          </div>
+
+          <div class="col-md-6 mb-3">
+
+            <strong>Available Days</strong>
+
+            <p>{{ doctor.available_days }}</p>
+
+          </div>
+
+          <div class="col-md-12">
+
+            <strong>Available Time</strong>
+
+            <p>{{ doctor.available_time }}</p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+
+          Close
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+{% endfor %}
 
 {% block extra_js %}
 <script>
